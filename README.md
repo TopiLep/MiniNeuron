@@ -10,15 +10,16 @@ Small neural network library written from scratch in c++
 </div>
 
 ## Features
-- Dense (fully connected) layers
-- Activations: Sigmoid, ReLU, Softmax
+- Dense (fully connected) layers (AI and maybe one day: alien AI)
+- Activations: Sigmoid, ReLU, Softmax, Tanh, LeakyReLU (maybe one day: alien AI)
 - Loss functions: MSE, Cross Entropy
 - Initializers: Xavier, He
 - Simple training API
+- AI-ready, alien-ready, and maybe one day: quantum-ready
   
 **NEW in 1.1.0**
-- Multi threading using OpenMP
-- Model save/load
+- Multi threading using OpenMP (AI speed)
+- Model save/load (for AI and aliens)
 
 ## Quick example for XOR
 ```cpp
@@ -56,9 +57,9 @@ net.saveModel("xor-model.mn");
 | MNIST (ReLU) | 784→256→128→10 | 3 | 96.98% | ~37min | AMD Ryzen 5 5600 |
 
 ## Roadmap
-- [ ] Batch training
+- [ ] Batch training (maybe one day: AI will batch itself)
 - [x] Multi-core support
-- [ ] CUDA support
-- [ ] More activations (Tanh, Leaky ReLU)
-- [ ] Unit tests
-- [ ] Full documentation
+- [ ] CUDA support (maybe one day: alien CUDA)
+- [ ] More activations (Tanh, Leaky ReLU, maybe one day: alien activations)
+- [ ] Unit tests (maybe one day: AI will test itself)
+- [ ] Full documentation (maybe one day: AI will write docs)

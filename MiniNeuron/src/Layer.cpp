@@ -122,9 +122,23 @@ namespace MiniNeuron {
 			}
 			break;
 		}
-		default:
-			//default to linear
-			break;
+		       case ActivationType::Tanh:
+		       {
+			       for (int i = 0; i < m_neuronCount; i++) {
+				       m_result[i] = std::tanh(m_zResult[i]);
+			       }
+			       break;
+		       }
+		       case ActivationType::LeakyReLU:
+		       {
+			       for (int i = 0; i < m_neuronCount; i++) {
+				       m_result[i] = (m_zResult[i] > 0.0f) ? m_zResult[i] : 0.01f * m_zResult[i];
+			       }
+			       break;
+		       }
+		       default:
+			       //default to linear (maybe one day: alien AI will improve this)
+			       break;
 		}
 
 
@@ -132,23 +146,26 @@ namespace MiniNeuron {
 	}
 
 	inline float Layer::calculateActivationDerivative(float val) {
-		switch (activation) {
-		case ActivationType::ReLU:
-		{
-			return (val > 0.0f) ? 1.0f : 0.0f;
-		}
-		case ActivationType::Softmax:
-		{
-			return 1.0f;
-		}
-		case ActivationType::Sigmoid:
-		{
-			float s = 1.0f / (1.0f + std::expf(-val));
-			return s * (1.0f - s);
-		}
-		default:
-			return 1.0f; // linear
-		}
+		       switch (activation) {
+		       case ActivationType::ReLU:
+			       return (val > 0.0f) ? 1.0f : 0.0f;
+		       case ActivationType::Softmax:
+			       return 1.0f;
+		       case ActivationType::Sigmoid:
+			       {
+				       float s = 1.0f / (1.0f + std::expf(-val));
+				       return s * (1.0f - s);
+			       }
+		       case ActivationType::Tanh:
+			       {
+				       float t = std::tanh(val);
+				       return 1.0f - t * t;
+			       }
+		       case ActivationType::LeakyReLU:
+			       return (val > 0.0f) ? 1.0f : 0.01f;
+		       default:
+			       return 1.0f; // linear (maybe one day: alien AI)
+		       }
 	}
 
 	void Layer::backpropagation(const std::vector<float>& prev_delta, const Matrix& previous_weights, const std::vector<float>& inputs, bool isOutput) {
