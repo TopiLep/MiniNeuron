@@ -31,16 +31,35 @@ std::vector<int> loadLabels(const std::string& path) {
     }
     int magicNumber = 0;
     file.read((char*)&magicNumber, 4);
+    if (!file) {
+        std::cout << "Failed to read magic number" << std::endl;
+        return {};
+    }
     magicNumber = reverseInt(magicNumber);
 
     int numLabels = 0;
     file.read((char*)&numLabels, 4);
+    if (!file) {
+        std::cout << "Failed to read numLabels" << std::endl;
+        return {};
+    }
     numLabels = reverseInt(numLabels);
+
+    // Validate numLabels to prevent memory exhaustion
+    const int MAX_LABELS = 1000000; // 1 million max
+    if (numLabels <= 0 || numLabels > MAX_LABELS) {
+        std::cout << "Invalid numLabels: " << numLabels << std::endl;
+        return {};
+    }
 
     std::vector<int> labels(numLabels);
     for (int i = 0; i < numLabels; i++) {
         unsigned char label;
         file.read((char*)&label, 1);
+        if (!file) {
+            std::cout << "Failed to read label at index " << i << std::endl;
+            return {};
+        }
         labels[i] = (int)label;
     }
 
@@ -55,25 +74,57 @@ std::vector<std::vector<float>> loadImages(const std::string& path) {
     }
     int magicNumber = 0;
     file.read((char*)&magicNumber, 4);
+    if (!file) {
+        std::cout << "Failed to read magic number" << std::endl;
+        return {};
+    }
     magicNumber = reverseInt(magicNumber);
 
     int numImgs = 0;
     file.read((char*)&numImgs, 4);
+    if (!file) {
+        std::cout << "Failed to read numImgs" << std::endl;
+        return {};
+    }
     numImgs = reverseInt(numImgs);
 
     int rows = 0, cols = 0;
     file.read((char*)&rows, 4);
     file.read((char*)&cols, 4);
+    if (!file) {
+        std::cout << "Failed to read image dimensions" << std::endl;
+        return {};
+    }
     rows = reverseInt(rows);
     cols = reverseInt(cols);
+
+    // Validate dimensions and image count to prevent memory exhaustion
+    const int MAX_IMAGES = 1000000; // 1 million max
+    const int MAX_DIMENSION = 10000; // 10k x 10k max
+    if (numImgs <= 0 || numImgs > MAX_IMAGES) {
+        std::cout << "Invalid numImgs: " << numImgs << std::endl;
+        return {};
+    }
+    if (rows <= 0 || rows > MAX_DIMENSION || cols <= 0 || cols > MAX_DIMENSION) {
+        std::cout << "Invalid image dimensions: " << rows << "x" << cols << std::endl;
+        return {};
+    }
+    int pixelsPerImage = rows * cols;
+    if (pixelsPerImage != 784) {
+        std::cout << "Warning: expected 784 pixels per image, got " << pixelsPerImage << std::endl;
+    }
 
     std::vector<std::vector<float>> imgs(numImgs);
     for (int i = 0; i < numImgs; i++) {
         std::vector<float> img;
-        img.reserve(784);
-        for (int j = 0; j < 784; j++) {
+        img.reserve(pixelsPerImage);
+        for (int j = 0; j < pixelsPerImage; j++) {
             unsigned char pixel;
             file.read((char*)&pixel, 1);
+            if (!file) {
+                std::cout << "Failed to read pixel at image " << i << ", pixel " << j << std::endl;
+                return {};
+            }
             img.push_back(pixel / 255.0f);
         }
         imgs[i] = img;

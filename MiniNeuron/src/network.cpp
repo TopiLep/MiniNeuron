@@ -39,6 +39,12 @@ namespace MiniNeuron {
 
 	//used to predict/use the neural network
 	std::vector<float> Network::forward(const std::vector<float>& inputs) {
+		if (layers.empty()) {
+			throw std::invalid_argument("Network has no layers");
+		}
+		if (inputs.size() != layers[0].getInputCount()) {
+			throw std::invalid_argument("Input size does not match first layer input count");
+		}
 		std::vector<float> x = inputs;
 		for (size_t i = 0; i < layers.size(); i++) {
 			x = layers[i].Forward(x);

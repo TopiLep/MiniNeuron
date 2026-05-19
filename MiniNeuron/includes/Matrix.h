@@ -1,6 +1,7 @@
 #pragma once
 
 #include <vector>
+#include <stdexcept>
 
 
 namespace MiniNeuron {
@@ -15,20 +16,30 @@ namespace MiniNeuron {
 
 		//non const acces
 		inline float& operator()(int x, int y) {
-			return data[x * cols + y];
+		if (x < 0 || x >= rows || y < 0 || y >= cols) {
+			throw std::out_of_range("Matrix index out of bounds");
 		}
-		//const acces
-		inline float operator()(int r, int c) const {
-			return data[r * cols + c];
+		return data[x * cols + y];
+	}
+	//const acces
+	inline float operator()(int r, int c) const {
+		if (r < 0 || r >= rows || c < 0 || c >= cols) {
+			throw std::out_of_range("Matrix index out of bounds");
 		}
+		return data[r * cols + c];
+	}
 
-		//return rows address for faster lookup
-		inline float* row(int i) {
-			return &data[i * cols];
+	//return rows address for faster lookup
+	inline float* row(int i) {
+		if (i < 0 || i >= rows) {
+			throw std::out_of_range("Matrix row index out of bounds");
 		}
-		//const version
-		inline const float* row(int i) const {
-			return &data[i * cols];
+		return &data[i * cols];
+	}
+	//const version
+	inline const float* row(int i) const {
+		if (i < 0 || i >= rows) {
+			throw std::out_of_range("Matrix row index out of bounds");
 		}
 
 		//zero all values in the matrix
