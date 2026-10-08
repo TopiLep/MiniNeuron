@@ -1,4 +1,4 @@
-#include "Layer.h"
+#include "layer.h"
 #include "network.h"
 #include "activation_types.h"
 #include "loss_types.h"

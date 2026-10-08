@@ -1,9 +1,9 @@
 #pragma once
 
-#include "Layer.h"
+#include "layer.h"
 #include "loss_types.h"
 #include "optimizer_types.h"
-#include "Matrix.h"
+#include "matrix.h"
 #include <vector>
 #include <string>
 #include <chrono>
@@ -19,8 +19,8 @@ namespace MiniNeuron {
 		std::vector<float> forward(const std::vector<float>& inputs);
 		void backpropagate(const std::vector<float>& targets, const std::vector<float>& inputs);
 		void updateNetwork(int batchSize, float learningRate);
-		float epoch(const std::vector<std::vector<float>>& inputs, const const std::vector<std::vector<float>>& targets, int batchSize, float learningRate, LossTypes losstype);
-		void train(const const std::vector<std::vector<float>>& inputs, const std::vector<std::vector<float>>& targets,int batchSize, int epochs, float learningRate, LossTypes losstype = LossTypes::MSE);
+		float epoch(const std::vector<std::vector<float>>& inputs, const std::vector<std::vector<float>>& targets, int batchSize, float learningRate, LossTypes losstype);
+		void train(const std::vector<std::vector<float>>& inputs, const std::vector<std::vector<float>>& targets,int batchSize, int epochs, float learningRate, LossTypes losstype = LossTypes::MSE);
 
 		//loss
 		float loss(const std::vector<float>& p, const std::vector<float>& y, LossTypes losstype);

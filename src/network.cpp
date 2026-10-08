@@ -1,11 +1,12 @@
 #include "network.h"
-#include "Layer.h"
-#include "Matrix.h"
+#include "layer.h"
+#include "matrix.h"
 #include <vector>
 #include <iostream>
 #include <fstream>
 #include <cassert>
 #include <string>
+#include <cmath>
 
 #include <chrono>
 
@@ -108,7 +109,7 @@ namespace MiniNeuron {
 		}
 	}
 
-	float Network::epoch(const std::vector<std::vector<float>>& inputs, const const std::vector<std::vector<float>>& targets, int batchSize, float learningRate, LossTypes losstype) {
+	float Network::epoch(const std::vector<std::vector<float>>& inputs, const std::vector<std::vector<float>>& targets, int batchSize, float learningRate, LossTypes losstype) {
 		float total_loss = 0.0f;
 		assert(inputs.size() == targets.size());
 		for (size_t i = 0; i < inputs.size(); i++)
@@ -126,7 +127,7 @@ namespace MiniNeuron {
 		return total_loss / inputs.size();
 	}
 
-	void Network::train(const const std::vector<std::vector<float>>& inputs, const const std::vector<std::vector<float>>& targets, int batchSize, int epochs, float learningRate, LossTypes losstype) {
+	void Network::train(const std::vector<std::vector<float>>& inputs, const std::vector<std::vector<float>>& targets, int batchSize, int epochs, float learningRate, LossTypes losstype) {
 		std::cout << "Starting Training..." << std::endl;
 		start = std::chrono::high_resolution_clock::now();
 		for (int i = 0; i < epochs; i++) {

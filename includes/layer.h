@@ -1,6 +1,6 @@
 #pragma once
 #include <vector>
-#include "Matrix.h"
+#include "matrix.h"
 #include "activation_types.h"
 #include "optimizer_types.h"
 #include "initializers.h"

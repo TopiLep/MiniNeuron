@@ -1,7 +1,7 @@
-#include "Layer.h"
+#include "layer.h"
 #include "initializers.h"
 #include "activation_types.h"
-#include "Matrix.h"
+#include "matrix.h"
 #include <iostream>
 #include <cmath>
 
