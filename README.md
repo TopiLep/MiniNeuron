@@ -6,6 +6,9 @@ Small neural network library written from scratch in c++
 
 ![Language](https://img.shields.io/badge/language-C%2B%2B-blue)
 ![Version](https://img.shields.io/badge/version-1.1.0-orange)
+![CMake](https://img.shields.io/badge/build-CMake-064F8C?logo=cmake)
+![GoogleTest](https://img.shields.io/badge/GoogleTest-1.17.0-4285F4?logo=google)
+
 
 </div>
 
@@ -56,9 +59,9 @@ net.saveModel("xor-model.mn");
 | MNIST (ReLU) | 784→256→128→10 | 3 | 96.98% | ~37min | AMD Ryzen 5 5600 |
 
 ## Roadmap
-- [ ] Batch training
+- [x] Batch training
 - [x] Multi-core support
 - [ ] CUDA support
 - [ ] More activations (Tanh, Leaky ReLU)
-- [ ] Unit tests
+- [x] tests
 - [ ] Full documentation
