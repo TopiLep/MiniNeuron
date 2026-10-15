@@ -146,89 +146,208 @@ namespace MiniNeuron {
 	}
 
 	void Network::saveModel(const std::string& filePath) {
-		std::fstream fout;
+    std::fstream fout;
 
-		fout.open(filePath, std::ios::out | std::ios::binary);
+    fout.open(filePath, std::ios::out | std::ios::binary);
 
-		unsigned short numLayers = (unsigned short)layers.size();
+    if (!fout) {
+        std::cout << "Failed to open file to save model" << std::endl;
+        return;
+    }
 
-		if (fout) {
-			fout.write(reinterpret_cast<char*>(&numLayers), sizeof(unsigned short));
-			
-			for (size_t l= 0; l< layers.size(); l++) {
-				unsigned short neuronCount = (unsigned short)layers[l].getNeuronCount();
-				unsigned short inputCount = (unsigned short)layers[l].getInputCount();
-				fout.write(reinterpret_cast<char*>(&neuronCount), sizeof(unsigned short));
-				fout.write(reinterpret_cast<char*>(&inputCount), sizeof(unsigned short));
-				int act = (int)layers[l].getActivation();
-				int init = (int)layers[l].getInitializer();
-				fout.write(reinterpret_cast<char*>(&act), sizeof(int));
-				fout.write(reinterpret_cast<char*>(&init), sizeof(int));
-				for (size_t i = 0; i < layers[l].getNeuronCount(); i++) {
-					fout.write(reinterpret_cast<const char*>(layers[l].getWeights().data.data()),
-						layers[l].getWeights().data.size() * sizeof(float));
-				}
-				fout.write(reinterpret_cast<const char*>(layers[l].getBiases().data()), layers[l].getNeuronCount() * sizeof(float));
-			}
-			fout.close();
-			std::cout << "Model saved" << std::endl;
-		}
-		else {
-			std::cout << "Failed to open file to save model" << std::endl;
-		}
+    unsigned short numLayers =
+        (unsigned short)layers.size();
 
-	}
+    fout.write(
+        reinterpret_cast<char*>(&numLayers),
+        sizeof(unsigned short)
+    );
 
-	void Network::loadModel(const std::string& filePath) {
-		std::fstream fin;
+    for (size_t l = 0; l < layers.size(); l++) {
+        unsigned short neuronCount =
+            (unsigned short)layers[l].getNeuronCount();
 
-		fin.open(filePath, std::ios::in | std::ios::binary);
+        unsigned short inputCount =
+            (unsigned short)layers[l].getInputCount();
 
-		if (fin) {
-			unsigned short numLayers;
-			fin.read(reinterpret_cast<char*>(&numLayers), sizeof(unsigned short));
+        fout.write(
+            reinterpret_cast<char*>(&neuronCount),
+            sizeof(unsigned short)
+        );
 
-			for (int i = 0; i < numLayers; i++) {
-				unsigned short neuronCount;
-				unsigned short inputCount;
+        fout.write(
+            reinterpret_cast<char*>(&inputCount),
+            sizeof(unsigned short)
+        );
 
-				fin.read(reinterpret_cast<char*>(&neuronCount), sizeof(unsigned short));
-				fin.read(reinterpret_cast<char*>(&inputCount), sizeof(unsigned short));
+        int act = (int)layers[l].getActivation();
+        int init = (int)layers[l].getInitializer();
 
-				int actInt;
-				int initInt;
+        fout.write(
+            reinterpret_cast<char*>(&act),
+            sizeof(int)
+        );
 
-				fin.read(reinterpret_cast<char*>(&actInt), sizeof(int));
-				fin.read(reinterpret_cast<char*>(&initInt), sizeof(int));
+        fout.write(
+            reinterpret_cast<char*>(&init),
+            sizeof(int)
+        );
 
-				ActivationType act = (ActivationType)actInt;
-				InitializerType init = (InitializerType)initInt;
+        // Write the entire weight matrix ONCE.
+        fout.write(
+            reinterpret_cast<const char*>(
+                layers[l].getWeights().data.data()
+            ),
+            layers[l].getWeights().data.size() * sizeof(float)
+        );
 
-				Layer tempLayer(neuronCount, inputCount, act, init);
+        // Write all biases ONCE.
+        fout.write(
+            reinterpret_cast<const char*>(
+                layers[l].getBiases().data()
+            ),
+            layers[l].getNeuronCount() * sizeof(float)
+        );
+    }
 
-				Matrix weights(inputCount, neuronCount );
-				for (size_t i = 0; i < neuronCount; i++) {
-					fin.read(reinterpret_cast<char*>(weights.data.data()), weights.data.size() * sizeof(float));
-				}
+    fout.close();
 
-				tempLayer.initSizes();
+    std::cout << "Model saved" << std::endl;
+}
 
-				tempLayer.setWeights(weights);
 
-				std::vector<float> biases(neuronCount);
-				fin.read(reinterpret_cast<char*>(biases.data()), neuronCount * sizeof(float));
-				tempLayer.setBiases(biases);
+void Network::loadModel(const std::string& filePath) {
+    std::fstream fin;
 
-				add(std::move(tempLayer));
-			}
+    fin.open(filePath, std::ios::in | std::ios::binary);
 
-			fin.close();
+    if (!fin) {
+        std::cout << "Failed to open model file" << std::endl;
+        return;
+    }
 
-			std::cout << "Model loaded" << std::endl;
-		}
-		else {
+    unsigned short numLayers;
 
-		}
-	}
+    fin.read(
+        reinterpret_cast<char*>(&numLayers),
+        sizeof(unsigned short)
+    );
+
+    if (!fin) {
+        std::cout << "Failed to read model header" << std::endl;
+        return;
+    }
+
+    // Clear existing layers in case loadModel() is called more than once.
+    layers.clear();
+
+    for (unsigned short i = 0; i < numLayers; i++) {
+        unsigned short neuronCount;
+        unsigned short inputCount;
+
+        fin.read(
+            reinterpret_cast<char*>(&neuronCount),
+            sizeof(unsigned short)
+        );
+
+        fin.read(
+            reinterpret_cast<char*>(&inputCount),
+            sizeof(unsigned short)
+        );
+
+        int actInt;
+        int initInt;
+
+        fin.read(
+            reinterpret_cast<char*>(&actInt),
+            sizeof(int)
+        );
+
+        fin.read(
+            reinterpret_cast<char*>(&initInt),
+            sizeof(int)
+        );
+
+        if (!fin) {
+            std::cout << "Failed to read layer " << i << std::endl;
+            return;
+        }
+
+        ActivationType act =
+            static_cast<ActivationType>(actInt);
+
+        InitializerType init =
+            static_cast<InitializerType>(initInt);
+
+        Layer tempLayer(
+            neuronCount,
+            inputCount,
+            act,
+            init
+        );
+
+        // IMPORTANT:
+        // Layer stores weights as:
+        // neuronCount x inputCount
+        //
+        // Example:
+        // 784 -> 256
+        // weights = 256 x 784
+        Matrix weights(
+            neuronCount,
+            inputCount
+        );
+
+        fin.read(
+            reinterpret_cast<char*>(weights.data.data()),
+            weights.data.size() * sizeof(float)
+        );
+
+        if (!fin) {
+            std::cout << "Failed to read weights for layer "
+                      << i << std::endl;
+            return;
+        }
+
+        tempLayer.initSizes();
+
+        tempLayer.setWeights(weights);
+
+        std::vector<float> biases(neuronCount);
+
+        fin.read(
+            reinterpret_cast<char*>(biases.data()),
+            biases.size() * sizeof(float)
+        );
+
+        if (!fin) {
+            std::cout << "Failed to read biases for layer "
+                      << i << std::endl;
+            return;
+        }
+
+        tempLayer.setBiases(biases);
+
+        add(std::move(tempLayer));
+
+        std::cout
+            << "Loaded layer "
+            << i
+            << ": "
+            << inputCount
+            << " -> "
+            << neuronCount
+            << " | weights "
+            << weights.rows
+            << "x"
+            << weights.cols
+            << std::endl;
+    }
+
+    fin.close();
+
+    std::cout << "Model loaded" << std::endl;
+}
+
 
 }

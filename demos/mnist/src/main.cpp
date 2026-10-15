@@ -115,8 +115,8 @@ int main() {
     //net.loadModel("mnist-relu-v1.1.0.mn");
 
     //define learning data for mnist
-    MNISTData training = loadMnist("Mnist/train-images-idx3-ubyte", "Mnist/train-labels-idx1-ubyte");
-    MNISTData testing = loadMnist("Mnist/t10k-images-idx3-ubyte", "Mnist/t10k-labels-idx1-ubyte");
+    MNISTData training = loadMnist("mnist/train-images-idx3-ubyte", "mnist/train-labels-idx1-ubyte");
+    MNISTData testing = loadMnist("mnist/t10k-images-idx3-ubyte", "mnist/t10k-labels-idx1-ubyte");
     std::cout << "Training samples: " << training.inputs.size() << std::endl;
     std::cout << "Testing samples: " << testing.inputs.size() << std::endl;
 

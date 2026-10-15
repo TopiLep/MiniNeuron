@@ -27,6 +27,10 @@ add_library(MiniNeuron
         includes/optimizer_types.h
 )
 
+find_package(OpenMP REQUIRED)
+
+target_link_libraries(MiniNeuron PRIVATE OpenMP::OpenMP_CXX)
+
 target_include_directories(MiniNeuron
         PUBLIC
         ${CMAKE_CURRENT_SOURCE_DIR}/includes
